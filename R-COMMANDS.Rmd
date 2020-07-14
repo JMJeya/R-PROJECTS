@@ -26,3 +26,106 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r}
+## MISSING VALUES
+X = c(34,33,65,37,89,NA,43,NA,11,NA,23,NA)
+
+length(X) ## length takes into account NA as a data element
+
+is.na(X) ## Returns a TRUE for every element that is NA and FALSE for every element that is not NA
+
+X[!is.na(X)] ## Outputs the elements in X that is not "NA"
+
+sum(is.na(X)) ## Outputs number of elements that are "NA"
+
+X[is.na(X)] = 0 ## replaces the NA with 0 
+
+is.na(X)
+
+Y = c(34,33,65,37,89,NA,43,NA,11,NA,23,NA)
+mean(Y) ## This will return an output of NA as some of the data elements are NA
+
+mean(Y[!is.na(Y)]) ## calculates the mean value of Y without taking into consideration the NA
+
+mean(Y, na.rm = TRUE) ## calculates the mean value of Y after removing the NA elements 
+
+
+data(Orange)
+head(Orange)
+Orange$age[Orange$age == 118] <- NA ## replace the values in the age column that are 118 to NA
+head(Orange)
+
+
+c1 <- c(1,2,3,NA)
+c2 <- c(2,4,6,89)
+c3 <- c(45,NA,66,101)
+
+rbind(c1,c2,c3) ## creates a matrix by adding row wise
+rbind(c1,c2,c3, deparse.level = 0) ## deparse.level = 0 does not give row names
+rbind(c1,c2,c3, deparse.level = 1) ## deparse.level = 1 gives row names as c1,c2, c3
+cbind(c1,c2,c3, deparse.level = 1) ## creates a matrix by adding col wise
+cbind(c1,c2,c3, deparse.level = 0) ## deparse.level = 0 does not give col names
+cbind(c1,c2,c3, deparse.level = 1) ## deparse.level = 1 gives col names as c1,c2, c3
+
+X <- rbind(c1, c2, c3, deparse.level = 1)
+complete.cases(X) ## returns a logical value. TRUE indicates which of the rows have complete data.  FALSE indicates the rows that has NA as data element
+
+X[!complete.cases(X), ] ## returns the matrix with rows that has NA
+X[complete.cases(X), ] ## returns the matrix with rows that is complete without NA
+
+```
+
+TIDYR - gather, spread, unite, separate
+```{r}
+library(tidyr)
+library(dplyr)
+
+head(mtcars)
+mtcars$cars <- rownames(mtcars) ## convert rownames of mtcars dataset as an additional column called "cars"
+head(mtcars)
+
+## "gather" converts the wide format to long format
+mtcarNew <- mtcars %>% 
+  gather(attribute, value, -cars) 
+## gather takes all the attributes (all the columns except the one named cars), and generates a table in the long form with a column called "attribute" where the column names are placed and the corresponding values in another column called "values")
+
+## gather only from specified columns
+mtcarNew1 <- mtcars %>% 
+            gather(attribute, value, mpg:hp)
+## here gather takes attributes only from mpg to hp columns and adds their names to attributes, and values to values, and also displays the respective values for other columns that were not gathered. 
+
+mtcarNew1
+
+## "spread" converts long form of the table to wide form
+
+mtcarsSpread <- mtcarNew1 %>%
+                spread(attribute, value)
+
+mtcarsSpread
+
+## "unite" combine two or more columns into a single column
+
+mtcarCG <- mtcars %>%
+          unite(carbGear, carb, gear, sep = "-") ## takes the columns "carb" and "gear" and combines the values in these two columns using "-" as the separator and adds it to a new column called "carbGear"
+
+mtcarCG
+
+### use "unite" to combine three columns
+
+mtNew <- mtcars %>% 
+        unite(carCylGear, cars, cyl, gear, sep = " / " )
+
+mtNew
+
+### "separate" splits one column to two or more columns
+
+mtOld <- mtNew %>% 
+        separate(carCylGear, c("cars", "cyl", "gear"), sep = "/")
+
+mtOld
+
+```
+
