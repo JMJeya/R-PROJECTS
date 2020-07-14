@@ -1,0 +1,68 @@
+---
+title: "ELISA data"
+output: html_document
+---
+
+```{r}
+### Reorganizing ELISA data to desired format
+edata <- read.csv("/Users/jeya/Desktop/Edata.csv", header = FALSE)
+edata
+c13 <- subset(edata, select = c("V1", "V2", "V3"))
+c46 <- subset(edata, select = c("V4", "V5", "V6"))
+c13
+c46
+names(c13)[1:3] <- c("c1", "c2", "c3")
+names(c46)[1:3] <- c("c1", "c2", "c3")
+c13
+c46
+edata1 <- rbind(c13, c46)
+edata1
+
+### Getting the ELISA well design
+eplate <- read.csv("/Users/jeya/Desktop/plate design.csv", header = FALSE)
+eplate
+p1 <- subset(eplate, select = "V1")
+p4 <- subset(eplate, select = "V4")
+names(p1)[1] <- "c1"
+names(p4)[1] <- "c1"
+eplate_des <- rbind(p1, p4)
+eplate_des
+
+data <- cbind(eplate_des, edata1)
+data
+
+library(dplyr)
+NC_mean <- rowMeans(data())
+  
+  
+  
+```
+
+```{r}
+Eanalysis <- function(edata, eplate){
+c13 <- subset(edata, select = c("V1", "V2", "V3"))
+c46 <- subset(edata, select = c("V4", "V5", "V6"))
+names(c13)[1:3] <- c("c1", "c2", "c3")
+names(c46)[1:3] <- c("c1", "c2", "c3")
+edata1 <- rbind(c13, c46)
+edata1
+
+### Getting the ELISA well design
+eplate <- read.csv("/Users/jeya/Desktop/plate design.csv", header = FALSE)
+p1 <- subset(eplate, select = "V1")
+p4 <- subset(eplate, select = "V4")
+names(p1)[1] <- "c1"
+names(p4)[1] <- "c1"
+eplate_des <- rbind(p1, p4)
+
+data <- cbind(eplate_des, edata1)
+data
+ 
+}
+
+edata <- read.csv("/Users/jeya/Desktop/Edata.csv", header = FALSE)
+eplate <- read.csv("/Users/jeya/Desktop/plate design.csv", header = FALSE)
+Eanalysis(edata, eplate)
+
+```
+
