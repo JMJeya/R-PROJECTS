@@ -1,0 +1,62 @@
+---
+title: "STATISTICS"
+output: html_document
+---
+
+
+```{r}
+test <- read.csv("/Users/jeya/Desktop/test.csv")
+test
+
+## SCATTER PLOT USING BASE R package
+plot(test$X3, test$X6, 
+     cex = 1, 
+     ylim = c(1, 100), xlim = c(1, 50),
+     xlab = "x-axis", ylab = "y-axis",
+     col = "red",
+     main = "scatter plot example")
+
+## cex indicates circle size (1>2>3 and so on)
+## xlim and ylim: limits of X and Y axis
+## pch: shape of markers
+## xlab and ylab: labels for x-axis and y-axis
+## col: color
+## main: title of the graph
+
+## SCATTER PLOT USING ggplot
+library(ggplot2)
+ggplot(
+  test, ## data set
+  aes(x = X3, y = X6)) + ## define the x-axis and y-axis data
+  geom_point(
+    color = "black", ## outline color
+    stroke = 1, ## stroke width, i.e, outline width
+    fill = "red", ## fill color
+    shape = 21, ## shape fo the marker
+    alpha = 0.9, ## circle transparency; 0 to 1
+    size = 2 ## size of the marker
+  ) +
+  geom_smooth(method = lm, color = "black", fill = "#69b3a2", se = FALSE) ## Adds a linear trend line. "Method" = lm defines linear model; "color" tells the color of the line, "se" adds the confidence interval (In this example, se does not add the confidence interval as this is a perfect simulated data.  Refer to the example below for effect of se).  "se" is set at default at 0.95 and this can be changed with "level"
+
+data <- data.frame(
+  cond = rep(c("condition_1", "condition_2"), each=10), 
+  my_x = 1:100 + rnorm(100,sd=9), 
+  my_y = 1:100 + rnorm(100,sd=16) 
+)
+
+ggplot(
+  data,
+  aes(x = my_x, y = my_y)
+) + geom_point(
+  color = "grey"
+) + 
+  geom_smooth(model = lm, color = "black", se = TRUE, level = 0.99)
+
+```
+
+```{r}
+cor(test) ## gives only the correlation coefficient but not the associated p-value
+
+
+```
+
