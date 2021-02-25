@@ -1,0 +1,53 @@
+---
+title: "DATA CLEANUP"
+output: html_document
+---
+
+```{r}
+getwd()
+dir()
+file.rename("Control vs PXF1I vs PXF1P vs PXF2.xls", "irisData")
+```
+
+
+```{r}
+data <- read.csv("irisData.csv", stringsAsFactors = FALSE)
+colnames((data))
+data <- data[, c(4:6, 8:13)]
+colnames(data)[1:5] <- c("ptnDesc", "accNo", "mw", "pvalue", "quantProfile")
+
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+colnames(data)
+data <- data %>%
+  relocate(PX1.P, .before = PX2)
+data
+
+```
+
+```{r}
+data1 <- data %>%
+  mutate(ptnDesc = str_replace(ptnDesc, "Cluster of ", "")) %>%
+  separate(ptnDesc, sep = "OS=", into = "ptnDesc") %>%
+  separate(accNo, sep = "\\(|\\[", into = "accNo") %>%
+  separate(accNo, sep = "\\|", into = c("accNo", "accNo1","accNo2")) %>%
+  mutate(accNo = str_replace(accNo, "sp", "")) %>%
+  separate(accNo1, sep = "P|Q", into = "accNo1") %>%
+  replace(., is.na(.), "") %>%
+  mutate(accNo = paste(accNo, accNo1, accNo2,"")) %>%
+  select(-c("accNo1", "accNo2")) %>%
+  mutate(pvalue = str_replace(pvalue, "< ", "")) %>%
+  mutate_at("pvalue", as.numeric) %>%
+  mutate(quantProfile = str_replace(quantProfile, "\\[]", "No Change")) %>%
+  filter(pvalue<0.05)  %>%
+  print(data1)
+
+data1
+dput(data1$quanProfile)
+
+
+```
+

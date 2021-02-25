@@ -1,0 +1,66 @@
+---
+title: "VH ANALYSIS"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+library(tidyverse)
+library(readxl)
+vh <- read_excel("vhData.xlsx")
+vh1 <- vh[ ,c(1, 4:17)] ### subset the table without the 2nd and 3rd row.  The resulting table will have the accession ID and the PSM values for all the samples.
+vh2 <- column_to_rownames(vh1, var = "Accession")  ### renaming a column to rownames has to be done to a new object.  column_to_rownames does not work on if it is applied to be done on the same table.  The renaming has to generate a new table
+vh3 <- data.matrix(vh2) ### convert the data.frame to a numerical matrix for heat map
+
+heatmap(vh3, scale = "row") ### normalization based on values across the row
+
+### Hierarchical clustering to see the grouping among the samples
+
+vhDist <- dist(t(vh3), method = "minkowski", diag = TRUE, upper = TRUE, p = 2)
+vhClust <- hclust(vhDist, method = "complete")
+plot(vhClust)
+```
+
+
+```{r}
+library(tidyverse)
+vh <- read.csv("VH5-5-4.csv")
+vh
+vh1 <- vh[ ,2:30]
+vh1
+vh2 <- column_to_rownames(vh1, var = "accNo") 
+vh2
+vh3 <- data.matrix(vh2) ### convert the data.frame to a numerical matrix for heat map
+
+heatmap(vh3, scale = "row") ### normalization based on values across the row
+
+### Hierarchical clustering to see the grouping among the samples
+
+vhDist <- dist(t(vh3), method = "euclidean", diag = TRUE, upper = TRUE, p = 2)
+vhClust <- hclust(vhDist, method = "average")
+plot(vhClust)
+```

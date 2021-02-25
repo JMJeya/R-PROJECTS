@@ -1,0 +1,118 @@
+---
+title: "R for Proteomics"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("RforProteomics")
+```
+OBTAINING THE CODE
+```{r}
+##check the path for the library "RforProteomics"
+system.file(package = "RforProteomics")
+
+##check the contents of the library "RforProteomics"
+dir(system.file(package = "RforProteomics"))
+
+##check the contents of the library "RforProteomics" with the full names (that includes the path)
+dir(system.file(package = "RforProteomics"), full.names = TRUE)
+
+##check the contents of the folder "doc" in the library "RforProteomics"
+dir(system.file("doc", package = "RforProteomics"))
+
+## Gets vignette source; get the path for the file "RforProteomics.R" in the doc folder of the library "RforProteomics"
+rfile <- system.file("doc/RforProteomics.R", package = "RforProteomics")
+rfile
+```
+
+PREPARING THE WORKING ENVIRONMENT
+```{r}
+library("RColorBrewer") ## For the color palettes
+library("ggplot2") ## For convenient and nice plotting
+library("reshape2") ## For flexibly reshaping the data
+```
+
+
+DATA STANDARDS AND INPUT/OUTPUT
+THE mzR package
+*** RAW MS DATA
+```{r}
+library("mzR") ## Software package
+library("msdata") ## Data package
+
+## Check the contents of the library "msdata"
+dir(system.file(package = "msdata"))
+
+filepath <- system.file("microtofq", package = "msdata")
+filepath
+
+## Check the contents of the folder "microqtof" of the library "msdata"
+dir(system.file("microtofq", package = "msdata"))
+
+## get the path of the file matching the regular expression with full names with path information
+
+file <- list.files(filepath, pattern = "MM14.mzML", full.names = TRUE, recursive = TRUE)
+file
+
+##create a connection to the mzML file
+mz <- openMSfile(file)
+
+## Removes all of the path up to and including the last path separator in the filename mz
+basename(fileName(mz))
+
+##Get the run information in the MM14.mzML file
+runInfo(mz)
+
+##Get the information about the instrument used to generate the data
+instrumentInfo(mz)
+
+## Explicitely close the connection - it is a good practise
+close(mz)
+```
+
+
+*** IDENTIFICATION DATA
+```{r}
+## Get the contents of the library "msdata" and the directory "mzid"
+dir(system.file(package = "msdata"))
+dir(system.file("mzid", package = "msdata"))
+
+## Two different options to get the path of the file "Tandem.mzid.gz" in the directory mzid 
+file <- system.file("mzid/Tandem.mzid.gz", package = "msdata")
+file <- system.file("mzid", "Tandem.mzid.gz", package = "msdata")
+file
+
+## Open the identification file
+mzid <- openIDfile(file)
+mzid
+
+## Extract data and meta data
+## Get the information on the softwares used
+softwareInfo(mzid)
+
+## Details of the enzymes used for peptide generation 
+enzymes(mzid)
+
+## Get the details of the columns of the table generated using the function "psms"
+head(psms(mzid))
+names(psms(mzid))
+```
+
+MS2 DATA
+```{r}
+library("mzID")
+## check the contents of the folder "extdata" in the package "mzID"
+dir(system.file("extdata", package = "mzID"))
+
+## get the path name of all the files that have an extension of "mzid" in the extdata folder 
+mzids <- list.files(system.file("extdata", package = "mzID"), pattern = "*.mzid", full.names = TRUE)
+mzids
+
+id <- mzID(mzids[1])
+id
+```
+

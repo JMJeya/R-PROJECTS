@@ -96,8 +96,15 @@ mtcarNew <- mtcars %>%
 mtcarNew1 <- mtcars %>% 
             gather(attribute, value, mpg:hp)
 ## here gather takes attributes only from mpg to hp columns and adds their names to attributes, and values to values, and also displays the respective values for other columns that were not gathered. 
+### **** "gather" is replaced with "pivot_longer" ****
+library(tidyr)
+mtcarNew <- mtcars %>%
+            pivot_longer(
+              cols = -cars,
+              names_to = "mpg-cyl",
+              )
+mtcarNew
 
-mtcarNew1
 
 ## "spread" converts long form of the table to wide form
 
